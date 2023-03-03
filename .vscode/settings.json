@@ -1,0 +1,10 @@
+{
+    "files.associations": {
+        "*.impl": "cpp",
+        "string_view": "cpp"
+    },
+    "cSpell.words": [
+        "Pico",
+        "SSID"
+    ]
+}
