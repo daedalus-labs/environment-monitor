@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17.0)
-project(environment-monitor)
+project(environment-monitor C CXX ASM)
 string(TIMESTAMP BUILD_TIME "%s")
 
 if(NOT DEFINED BUILD_VERSION)
@@ -22,6 +22,8 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
