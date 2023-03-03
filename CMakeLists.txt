@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 3.17.0)
+
+# Must setup the PICO SDK before project
+include(cmake/pico-sdk.cmake)
+
 project(environment-monitor C CXX ASM)
 string(TIMESTAMP BUILD_TIME "%s")
 
@@ -6,29 +10,19 @@ if(NOT DEFINED BUILD_VERSION)
     set(BUILD_VERSION "0.0.0+${BUILD_TIME}")
 endif()
 
-##############
-## PICO SDK ##
-##############
-
-include(cmake/pico-sdk.cmake)
-
-pico_sdk_init()
+if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
 
 ###################
 ## CONFIGURATION ##
 ###################
 
-if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
+initialize_pico()
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-add_compile_options(-Wall -Werror -Wpedantic -Weffc++)
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/configuration.hpp.in
@@ -42,10 +36,17 @@ configure_file(
 
 add_executable(${PROJECT_NAME})
 
+target_compile_options(
+    ${PROJECT_NAME}
+    PRIVATE
+        -Wall -Werror -Wno-format -Wno-unused-function -Wno-maybe-uninitialized
+)
+
 target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/build
 )
 
 target_sources(
