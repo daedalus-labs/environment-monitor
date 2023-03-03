@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17.0)
 
-# Must setup the PICO SDK before project
+# Must setup the PICO SDK before the project macro call
 include(cmake/pico-sdk.cmake)
 
 project(environment-monitor C CXX ASM)
