@@ -1,0 +1,12 @@
+#pragma once
+
+#include <string_view>
+
+/** Wireless SSID (Pico W) */
+inline constexpr std::string_view SSID = "@WIRELESS_SSID@";
+
+/** Wireless Passphrase (Pico W) */
+inline constexpr std::string_view PASSPHRASE = "@WIRELESS_PASSPHRASE@";
+
+/** Monitor Build Version */
+inline constexpr std::string_view VERSION = "@BUILD_VERSION@";

@@ -1,0 +1,27 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/usr/include/newlib/c++/10.3.1",
+                "/etc/pico-sdk/src/common/pico_base/include/**",
+                "/etc/pico-sdk/src/common/pico_stdlib/include/**",
+                "/etc/pico-sdk/src/common/pico_time/include/**",
+                "/etc/pico-sdk/src/host/hardware_gpio/include/**",
+                "/etc/pico-sdk/src/host/hardware_timer/include/**",
+                "/etc/pico-sdk/src/host/hardware_uart/include/**",
+                "/etc/pico-sdk/src/host/pico_platform/include/**",
+                "/etc/pico-sdk/src/host/pico_stdio/include/**",
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/build/**",
+                "${workspaceFolder}/build/generated/pico_base/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/arm-none-eabi-g++",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "linux-gcc-arm64"
+        }
+    ],
+    "version": 4
+}
