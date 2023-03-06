@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "*.impl": "cpp",
-        "string_view": "cpp"
+        "string_view": "cpp",
+        "array": "cpp"
     },
     "cSpell.words": [
         "Pico",
