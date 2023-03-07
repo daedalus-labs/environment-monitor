@@ -2,12 +2,16 @@
 Copyright 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
-#include "generated/configuration.hpp"
-
-#include <pico/stdlib.h>
+#pragma once
 
 
-int main(int argc, char** argv)
-{
-    return 0;
-}
+#include <pico/time.h>
+#include <pico/types.h>
+
+#include <cstdint>
+
+
+/**
+ * @return The microseconds since boot.
+ */
+uint64_t microseconds();

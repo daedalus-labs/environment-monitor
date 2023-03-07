@@ -1,39 +1,18 @@
 /*------------------------------------------------------------------------------
 Copyright 2023 Joe Porembski
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice, this
-   list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-   this list of conditions and the following disclaimer in the documentation
-   and/or other materials provided with the distribution.
-
-3. Neither the name of the copyright holder nor the names of its
-   contributors may be used to endorse or promote products derived from
-   this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
 
 #include "sensors/dht.hpp"
 
 #include "sensors/constants.hpp"
+#include "utilities.hpp"
 
 #include <hardware/gpio.h>
 #include <pico/stdio.h>
 #include <pico/stdlib.h>
+#include <pico/time.h>
+#include <pico/types.h>
 
 #include <array>
 #include <cfloat>
@@ -50,9 +29,7 @@ inline constexpr size_t TEMP_LSB_INDEX = 3;
 inline constexpr size_t PARITY_INDEX = 4;
 inline constexpr float DATA_FACTOR = 10.0;
 inline constexpr uint8_t MAX_READ_CHECKS = 100;
-
-static uint8_t readByte(uint8_t pin)
-{}
+inline constexpr uint64_t LOGICAL_ZERO_THRESHOLD = 30;
 
 DHT::DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin)
     : _humidity(DEFAULT_HUMIDITY), _temperature(DEFAULT_TEMPERATURE), _type(type), _data_pin(data_pin), _feedback_led_pin(feedback_led_pin)
@@ -79,7 +56,7 @@ DHTType DHT::type() const
     return _type;
 }
 
-bool DHT::_check() const
+bool DHT::_checkResponse() const
 {
     // The check behavior here is taken from Step 2 in DHT communication
     // It is looking to verify the sensor response signal.
@@ -87,7 +64,7 @@ bool DHT::_check() const
     // Reference: https://www.waveshare.com/wiki/DHT22_Temperature-Humidity_Sensor
     uint8_t read_count = 0;
     gpio_set_dir(_data_pin, GPIO_IN);
-    while (gpio_get(_data_pin) && read_count < 100) {
+    while (gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
         read_count++;
         sleep_us(1);
     }
@@ -97,7 +74,7 @@ bool DHT::_check() const
     }
 
     read_count = 0;
-    while (!gpio_get(_data_pin) && read_count < 100) {
+    while (!gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
         read_count++;
         sleep_us(1);
     }
@@ -105,14 +82,63 @@ bool DHT::_check() const
     return read_count < MAX_READ_CHECKS;
 }
 
+bool DHT::_getDataBit() const
+{
+    // The DHT sensors are a bit strange.
+    // Rather than having data come in as it should be interpreted in fixed time
+    // intervals, whether a bit is "0" or "1" is defined by how long the data line
+    // is high following it being low for 50 us:
+    //  - 0: Data line is high for 26-28 us after the low period.
+    //  - 1: Data line is high for 70 us after the low period.
+    //
+    // The implementation here will wait for the transition then measure the amount of time
+    // the data line is high.
+
+    uint8_t read_count = 0;
+    while (!gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
+        read_count++;
+        sleep_us(1);
+    }
+
+    if (read_count >= MAX_READ_CHECKS) {
+        printf("Failed to read bit from %u due to time-out\n", _data_pin);
+        return false;
+    }
+
+    uint64_t start = microseconds();
+    read_count = 0;
+    while (gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
+        read_count++;
+        sleep_us(1);
+    }
+    uint64_t end = microseconds();
+
+    if (read_count >= MAX_READ_CHECKS) {
+        printf("Failed to read bit from %u due to time-out\n", _data_pin);
+        return false;
+    }
+
+    return (end - start) > LOGICAL_ZERO_THRESHOLD;
+}
+
+uint8_t DHT::_getDataByte() const
+{
+    uint8_t data = 0;
+    for (size_t i = 0; i < BITS_IN_BYTE; i++) {
+        data <<= 1;
+        data |= _getDataBit();
+    }
+    return data;
+}
+
 void DHT::_read()
 {
     std::array<uint8_t, BUFFER_SIZE> buffer;
 
     _setLED(ON);
-    _reset();
+    _start();
 
-    if (!_check()) {
+    if (!_checkResponse()) {
         _setLED(OFF);
         _temperature = DEFAULT_TEMPERATURE;
         _humidity = DEFAULT_HUMIDITY;
@@ -121,7 +147,7 @@ void DHT::_read()
     }
 
     for (size_t index; index < buffer.size(); index++) {
-        buffer[index] = readByte(_data_pin);
+        buffer[index] = _getDataByte();
     }
 
     uint8_t calculated_parity = buffer[HUMIDITY_MSB_INDEX] + buffer[HUMIDITY_LSB_INDEX] + buffer[TEMP_MSB_INDEX] + buffer[TEMP_LSB_INDEX];
@@ -149,7 +175,16 @@ void DHT::_read()
     }
 }
 
-void DHT::_reset()
+void DHT::_setLED(uint8_t state) const
+{
+    if (_feedback_led_pin >= NUM_BANK0_GPIOS) {
+        return;
+    }
+
+    gpio_put(_feedback_led_pin, state);
+}
+
+void DHT::_start()
 {
     // The reset behavior here is taken from Step 2 in DHT communication
     // Although some of the reference integration code provided by Waveshare show holding the data line low for longer.
@@ -162,13 +197,4 @@ void DHT::_reset()
     gpio_put(_data_pin, HIGH);
     sleep_us(20);
     gpio_set_dir(_data_pin, GPIO_IN);
-}
-
-void DHT::_setLED(uint8_t state) const
-{
-    if (_feedback_led_pin >= NUM_BANK0_GPIOS) {
-        return;
-    }
-
-    gpio_put(_feedback_led_pin, state);
 }

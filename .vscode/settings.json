@@ -2,10 +2,12 @@
     "files.associations": {
         "*.impl": "cpp",
         "string_view": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "chrono": "cpp"
     },
     "cSpell.words": [
         "Pico",
+        "Porembski",
         "SSID"
     ]
 }
