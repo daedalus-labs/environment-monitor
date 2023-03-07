@@ -29,7 +29,7 @@ inline constexpr size_t TEMP_LSB_INDEX = 3;
 inline constexpr size_t PARITY_INDEX = 4;
 inline constexpr float DATA_FACTOR = 10.0;
 inline constexpr uint8_t MAX_READ_CHECKS = 100;
-inline constexpr uint64_t LOGICAL_ZERO_THRESHOLD = 30;
+inline constexpr uint64_t LOGICAL_ZERO_THRESHOLD = 40;
 
 DHT::DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin)
     : _humidity(DEFAULT_HUMIDITY), _temperature(DEFAULT_TEMPERATURE), _type(type), _data_pin(data_pin), _feedback_led_pin(feedback_led_pin)
@@ -58,10 +58,11 @@ DHTType DHT::type() const
 
 bool DHT::_checkResponse() const
 {
-    // The check behavior here is taken from Step 2 in DHT communication
-    // It is looking to verify the sensor response signal.
-    //
-    // Reference: https://www.waveshare.com/wiki/DHT22_Temperature-Humidity_Sensor
+    /*
+     * The check behavior here is taken from Step 2 in DHT communication
+     * It is looking to verify the sensor response signal.
+     */
+
     uint8_t read_count = 0;
     gpio_set_dir(_data_pin, GPIO_IN);
     while (gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
@@ -84,17 +85,19 @@ bool DHT::_checkResponse() const
 
 bool DHT::_getDataBit() const
 {
-    // The DHT sensors are a bit strange.
-    // Rather than having data come in as it should be interpreted in fixed time
-    // intervals, whether a bit is "0" or "1" is defined by how long the data line
-    // is high following it being low for 50 us:
-    //  - 0: Data line is high for 26-28 us after the low period.
-    //  - 1: Data line is high for 70 us after the low period.
-    //
-    // The implementation here will wait for the transition then measure the amount of time
-    // the data line is high.
+    /*
+     * The DHT sensors are a bit strange.
+     * Rather than having data come in as it should be interpreted in fixed time
+     * intervals, whether a bit is "0" or "1" is defined by how long the data line
+     * is high following it being low for 50 us:
+     *  - 0: Data line is high for 26-28 us after the low period.
+     *  - 1: Data line is high for 70 us after the low period.
+     */
 
     uint8_t read_count = 0;
+
+    // First section of code will wait until the data line goes high, returning out
+    // in error if there was a timeout.
     while (!gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
         read_count++;
         sleep_us(1);
@@ -105,6 +108,10 @@ bool DHT::_getDataBit() const
         return false;
     }
 
+    // At this point, the code will measure the amount of time the data line
+    // is high by capturing the microseconds since boot at the start and end
+    // of the pulse. As above, this code will return out in error if there was
+    // a timeout.
     uint64_t start = microseconds();
     read_count = 0;
     while (gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
@@ -118,6 +125,8 @@ bool DHT::_getDataBit() const
         return false;
     }
 
+    // Assume if the time is less than the threshold for a `0`, it must be
+    // a `1`.
     return (end - start) > LOGICAL_ZERO_THRESHOLD;
 }
 
@@ -186,11 +195,11 @@ void DHT::_setLED(uint8_t state) const
 
 void DHT::_start()
 {
-    // The reset behavior here is taken from Step 2 in DHT communication
-    // Although some of the reference integration code provided by Waveshare show holding the data line low for longer.
-    // Basic flow here is to pull down the data line for 20 milliseconds then high for 20 microseconds.
-    //
-    // Reference: https://www.waveshare.com/wiki/DHT22_Temperature-Humidity_Sensor
+    /*
+     * The reset behavior here is taken from Step 2 in DHT communication
+     * Although some of the reference integration code provided by Waveshare show holding the data line low for longer.
+     * Basic flow here is to pull down the data line for 20 milliseconds then high for 20 microseconds.
+     */
     gpio_set_dir(_data_pin, GPIO_OUT);
     gpio_put(_data_pin, LOW);
     sleep_ms(20);

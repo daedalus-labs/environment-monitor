@@ -1,3 +1,4 @@
+# cmake-format: off
 cmake_minimum_required(VERSION 3.17.0)
 
 # Must setup the PICO SDK before the project macro call
@@ -46,3 +47,4 @@ target_sources(${PROJECT_NAME} PRIVATE src/main.cpp)
 target_link_libraries(${PROJECT_NAME} pico_stdlib hardware_i2c)
 
 pico_add_extra_outputs(${PROJECT_NAME})
+# cmake-format: on
