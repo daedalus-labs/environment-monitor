@@ -3,7 +3,7 @@ name: main
 on: [create, push, pull_request]
 jobs:
   build:
-    runs-on: [self-hosted, linux, ARM64]
+    runs-on: [self-hosted, Linux]
     container:
       image: pico:latest
       env:
