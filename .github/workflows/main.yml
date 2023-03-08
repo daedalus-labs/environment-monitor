@@ -4,11 +4,9 @@ on: [create, push, pull_request]
 jobs:
   build:
     runs-on: [self-hosted, Linux, pico]
-    container:
-      image: pico:latest
-      env:
-        BUILD_TYPE: Release
-        PICO_SDK_PATH: /etc/pico-sdk
+    env:
+      BUILD_TYPE: Release
+      PICO_SDK_PATH: /etc/pico-sdk
 
     steps:
     - uses: actions/checkout@v3
