@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "/usr/include/newlib/c++/10.3.1",
+                "/etc/pico-sdk/src/boards/include/**",
                 "/etc/pico-sdk/src/common/pico_base/include/**",
                 "/etc/pico-sdk/src/common/pico_stdlib/include/**",
                 "/etc/pico-sdk/src/common/pico_time/include/**",

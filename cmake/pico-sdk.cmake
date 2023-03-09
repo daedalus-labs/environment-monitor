@@ -1,3 +1,4 @@
+# cmake-format: off
 set(PICO_BOARD pico_w)
 
 if(NOT DEFINED PICO_SDK_PATH)
@@ -14,9 +15,10 @@ include(${PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
 macro(initialize_pico)
     pico_sdk_init()
-
+    
     if (NOT PICO_CYW43_SUPPORTED)
         message(FATAL_ERROR "PICO W is not set as the target or not supported by the SDK")
         return()
     endif()
 endmacro()
+# cmake-format: on

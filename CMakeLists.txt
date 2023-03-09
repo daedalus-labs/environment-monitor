@@ -1,3 +1,4 @@
+# cmake-format: off
 cmake_minimum_required(VERSION 3.17.0)
 
 # Must setup the PICO SDK before the project macro call
@@ -52,7 +53,10 @@ target_include_directories(
 target_sources(
     ${PROJECT_NAME}
     PRIVATE
+        src/sensors/dht.cpp
+
         src/main.cpp
+        src/utilities.cpp
 )
 
 target_link_libraries(
@@ -62,3 +66,4 @@ target_link_libraries(
 )
 
 pico_add_extra_outputs(${PROJECT_NAME})
+# cmake-format: on
