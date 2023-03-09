@@ -47,12 +47,14 @@ target_include_directories(
     ${PROJECT_NAME}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/connectivity/lwip
         ${CMAKE_CURRENT_SOURCE_DIR}/build
 )
 
 target_sources(
     ${PROJECT_NAME}
     PRIVATE
+        src/connectivity/wifi-connection.cpp
         src/sensors/dht.cpp
 
         src/main.cpp
@@ -61,6 +63,7 @@ target_sources(
 
 target_link_libraries(
     ${PROJECT_NAME}
+    pico_cyw43_arch_lwip_poll
     pico_stdlib
     hardware_i2c
 )
