@@ -6,6 +6,7 @@
 #include "generated/configuration.hpp"
 #include "sensors/constants.hpp"
 #include "sensors/dht.hpp"
+#include "utilities.hpp"
 
 #include <boards/pico_w.h>
 #include <hardware/gpio.h>
@@ -34,9 +35,9 @@ int main(int argc, char** argv)
     DHT sensor(DHTType::DHT22, DHT_DATA_PIN, LED_PIN);
 
     while (true) {
-        sleep_ms(4000);
+        sleep_ms(10000);
         sensor.read();
-        printf("Temperature: %.1fF, Humidity: %.1f%%\n", sensor.celsius(), sensor.humidity());
+        printf("[%lu] Temperature: %.1fC (%.1fF), Humidity: %.1f%%\n", microseconds(), sensor.celsius(), sensor.fahrenheit(), sensor.humidity());
     }
 
     return 0;
