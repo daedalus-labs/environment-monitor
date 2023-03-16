@@ -1,7 +1,7 @@
-// /*------------------------------------------------------------------------------
-// Copyright 2023 Joe Porembski
-// SPDX-License-Identifier: BSD-3-Clause
-// ------------------------------------------------------------------------------*/
+/*------------------------------------------------------------------------------
+Copyright 2023 Joe Porembski
+SPDX-License-Identifier: BSD-3-Clause
+------------------------------------------------------------------------------*/
 #include "generated/configuration.hpp"
 #include "sensors/constants.hpp"
 #include "sensors/dht.hpp"
