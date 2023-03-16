@@ -27,8 +27,12 @@ inline constexpr size_t TEMP_MSB_INDEX = 2;
 inline constexpr size_t TEMP_LSB_INDEX = 3;
 inline constexpr size_t PARITY_INDEX = 4;
 inline constexpr float DATA_FACTOR = 10.0;
-inline constexpr uint8_t MAX_READ_CHECKS = 100;
-inline constexpr uint64_t LOGICAL_ZERO_THRESHOLD = 40;
+inline constexpr float C_TO_F_SCALE = 9.0 / 5.0;
+inline constexpr float C_TO_F_OFFSET = 32.0;
+inline constexpr uint64_t MAX_WAIT_TIME_US = 100;
+inline constexpr uint64_t LOGICAL_ZERO_THRESHOLD_US = 40;
+inline constexpr uint64_t READ_REQUEST_LOW_TIME_MS = 20;
+inline constexpr uint64_t READ_REQUEST_HIGH_TIME_US = 30;
 
 DHT::DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin)
     : _humidity(DEFAULT_HUMIDITY), _temperature(DEFAULT_TEMPERATURE), _type(type), _data_pin(data_pin), _feedback_led_pin(feedback_led_pin)
@@ -41,6 +45,18 @@ DHT::DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin)
     else {
         printf("Feedback disabled, LED PIN %u is invalid\n", _feedback_led_pin);
     }
+
+    gpio_init(_data_pin);
+}
+
+float DHT::celsius() const
+{
+    return _temperature;
+}
+
+float DHT::fahrenheit() const
+{
+    return (C_TO_F_SCALE * _temperature) + C_TO_F_OFFSET;
 }
 
 float DHT::humidity() const
@@ -48,14 +64,14 @@ float DHT::humidity() const
     return _humidity;
 }
 
-float DHT::temperature() const
-{
-    return _temperature;
-}
-
 DHTType DHT::type() const
 {
     return _type;
+}
+
+void DHT::read()
+{
+    _read();
 }
 
 bool DHT::_checkResponse() const
@@ -63,26 +79,23 @@ bool DHT::_checkResponse() const
     /*
      * The check behavior here is taken from Step 2 in DHT communication
      * It is looking to verify the sensor response signal.
+     *
+     * The sensor will pull down for 40-80 us, then up for 40-80 us.
      */
 
-    uint8_t read_count = 0;
     gpio_set_dir(_data_pin, GPIO_IN);
-    while (gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
-        read_count++;
-        sleep_us(1);
-    }
 
-    if (read_count >= MAX_READ_CHECKS) {
+    if (!_wait(LOW, MAX_WAIT_TIME_US)) {
+        printf("Humidity sensor on %d did not pull down correctly in the preamble\n", _data_pin);
         return false;
     }
 
-    read_count = 0;
-    while (!gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
-        read_count++;
-        sleep_us(1);
+    if (!_wait(HIGH, MAX_WAIT_TIME_US)) {
+        printf("Humidity sensor on %d did not pull up correctly in the preamble\n", _data_pin);
+        return false;
     }
 
-    return read_count < MAX_READ_CHECKS;
+    return true;
 }
 
 bool DHT::_getDataBit() const
@@ -96,40 +109,12 @@ bool DHT::_getDataBit() const
      *  - 1: Data line is high for 70 us after the low period.
      */
 
-    uint8_t read_count = 0;
+    _wait(LOW, MAX_WAIT_TIME_US);
+    _wait(HIGH, MAX_WAIT_TIME_US);
 
-    // First section of code will wait until the data line goes high, returning out
-    // in error if there was a timeout.
-    while (!gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
-        read_count++;
-        sleep_us(1);
-    }
-
-    if (read_count >= MAX_READ_CHECKS) {
-        printf("Failed to read bit from %u due to time-out\n", _data_pin);
-        return false;
-    }
-
-    // At this point, the code will measure the amount of time the data line
-    // is high by capturing the microseconds since boot at the start and end
-    // of the pulse. As above, this code will return out in error if there was
-    // a timeout.
-    uint64_t start = microseconds();
-    read_count = 0;
-    while (gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
-        read_count++;
-        sleep_us(1);
-    }
-    uint64_t end = microseconds();
-
-    if (read_count >= MAX_READ_CHECKS) {
-        printf("Failed to read bit from %u due to time-out\n", _data_pin);
-        return false;
-    }
-
-    // Assume if the time is less than the threshold for a `0`, it must be
-    // a `1`.
-    return (end - start) > LOGICAL_ZERO_THRESHOLD;
+    // Wait 40 us, if the pin is still high, the bit is a `1`, otherwise it is a `0`.
+    sleep_us(LOGICAL_ZERO_THRESHOLD_US);
+    return gpio_get(_data_pin);
 }
 
 uint8_t DHT::_getDataByte() const
@@ -185,7 +170,7 @@ void DHT::_read()
         return;
     }
 
-    for (size_t index; index < data.size(); index++) {
+    for (size_t index = 0; index < data.size(); index++) {
         data[index] = _getDataByte();
     }
 
@@ -214,12 +199,25 @@ void DHT::_start()
     /*
      * The reset behavior here is taken from Step 2 in DHT communication
      * Although some of the reference integration code provided by Waveshare show holding the data line low for longer.
-     * Basic flow here is to pull down the data line for 20 milliseconds then high for 20 microseconds.
+     * Basic flow here is to pull down the data line for 20 milliseconds then high for 20-40 microseconds.
      */
+    printf("Starting read on DHT sensor connected to pin %lu\n", _data_pin);
+
     gpio_set_dir(_data_pin, GPIO_OUT);
     gpio_put(_data_pin, LOW);
-    sleep_ms(20);
+    sleep_ms(READ_REQUEST_LOW_TIME_MS);
     gpio_put(_data_pin, HIGH);
-    sleep_us(20);
-    gpio_set_dir(_data_pin, GPIO_IN);
+    sleep_us(READ_REQUEST_HIGH_TIME_US);
+}
+
+bool DHT::_wait(uint32_t desired_state, uint64_t wait_length) const
+{
+    bool desired_read_value = desired_state == HIGH;
+    uint64_t read_count = 0;
+    while (gpio_get(_data_pin) != desired_read_value && read_count < wait_length) {
+        read_count++;
+        sleep_us(1);
+    }
+
+    return read_count < wait_length;
 }
