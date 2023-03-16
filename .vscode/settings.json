@@ -6,6 +6,7 @@
         "chrono": "cpp"
     },
     "cSpell.words": [
+        "gpio",
         "Pico",
         "Porembski",
         "RASPBERRYPI",
