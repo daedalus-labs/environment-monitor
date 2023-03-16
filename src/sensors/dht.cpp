@@ -27,7 +27,7 @@ inline constexpr size_t TEMP_MSB_INDEX = 2;
 inline constexpr size_t TEMP_LSB_INDEX = 3;
 inline constexpr size_t PARITY_INDEX = 4;
 inline constexpr float DATA_FACTOR = 10.0;
-inline constexpr uint8_t MAX_READ_CHECKS = 100;
+inline constexpr uint8_t MAX_READ_CHECKS = 250;
 inline constexpr uint64_t LOGICAL_ZERO_THRESHOLD = 40;
 
 DHT::DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin)
@@ -41,6 +41,7 @@ DHT::DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin)
     else {
         printf("Feedback disabled, LED PIN %u is invalid\n", _feedback_led_pin);
     }
+    gpio_init(_data_pin);
 }
 
 float DHT::humidity() const
@@ -58,6 +59,11 @@ DHTType DHT::type() const
     return _type;
 }
 
+void DHT::read()
+{
+    _read();
+}
+
 bool DHT::_checkResponse() const
 {
     /*
@@ -65,24 +71,61 @@ bool DHT::_checkResponse() const
      * It is looking to verify the sensor response signal.
      */
 
-    uint8_t read_count = 0;
-    gpio_set_dir(_data_pin, GPIO_IN);
-    while (gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
-        read_count++;
-        sleep_us(1);
+    // uint8_t read_count = 0;
+    // gpio_set_dir(_data_pin, GPIO_IN);
+    // while (gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
+    //     read_count++;
+    //     sleep_us(1);
+    // }
+
+    // printf("Read Count on High: %u\n", read_count);
+
+    // if (read_count >= MAX_READ_CHECKS) {
+    //     return false;
+    // }
+
+    // read_count = 0;
+    // while (!gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
+    //     read_count++;
+    //     sleep_us(1);
+    // }
+
+    // printf("Read Count on Low: %u\n", read_count);
+    // return read_count < MAX_READ_CHECKS;
+
+    int data[5] = {0, 0, 0, 0, 0};
+    uint last = 1;
+    uint j = 0;
+    for (size_t i = 0; i < 85; i++) {
+        uint count = 0;
+        while (gpio_get(_data_pin) == last) {
+            count++;
+            sleep_us(1);
+            if (count == UINT8_MAX) {
+                printf("Count break 1\n", i, count);
+                break;
+            }
+        }
+
+        last = gpio_get(_data_pin);
+        if (count == UINT8_MAX) {
+            printf("Count break 2\n", i, count);
+            break;
+        }
+
+        printf("Index: %lu, Count: %lu, Position: %lu\n", i, count, j);
+        if ((i >= 4) && (i % 2 == 0)) {
+            data[j / 8] <<= 1;
+            if (count > 16) {
+                data[j / 8] |= 1;
+            }
+            j++;
+        }
     }
 
-    if (read_count >= MAX_READ_CHECKS) {
-        return false;
-    }
+    printf("Data: [%d, %d, %d, %d, %d]\n", data[0], data[1], data[2], data[3], data[4]);
 
-    read_count = 0;
-    while (!gpio_get(_data_pin) && read_count < MAX_READ_CHECKS) {
-        read_count++;
-        sleep_us(1);
-    }
-
-    return read_count < MAX_READ_CHECKS;
+    return false;
 }
 
 bool DHT::_getDataBit() const
@@ -105,6 +148,8 @@ bool DHT::_getDataBit() const
         sleep_us(1);
     }
 
+    printf("Read Count on wait: %u\n", read_count);
+
     if (read_count >= MAX_READ_CHECKS) {
         printf("Failed to read bit from %u due to time-out\n", _data_pin);
         return false;
@@ -121,6 +166,8 @@ bool DHT::_getDataBit() const
         sleep_us(1);
     }
     uint64_t end = microseconds();
+
+    printf("Pulse Length: %lu us\n", end - start);
 
     if (read_count >= MAX_READ_CHECKS) {
         printf("Failed to read bit from %u due to time-out\n", _data_pin);
@@ -185,7 +232,7 @@ void DHT::_read()
         return;
     }
 
-    for (size_t index; index < data.size(); index++) {
+    for (size_t index = 0; index < data.size(); index++) {
         data[index] = _getDataByte();
     }
 
@@ -216,10 +263,12 @@ void DHT::_start()
      * Although some of the reference integration code provided by Waveshare show holding the data line low for longer.
      * Basic flow here is to pull down the data line for 20 milliseconds then high for 20 microseconds.
      */
+    printf("Starting on %lu\n", _data_pin);
+
     gpio_set_dir(_data_pin, GPIO_OUT);
     gpio_put(_data_pin, LOW);
     sleep_ms(20);
-    gpio_put(_data_pin, HIGH);
-    sleep_us(20);
+    // gpio_put(_data_pin, HIGH);
+    // sleep_us(20);
     gpio_set_dir(_data_pin, GPIO_IN);
 }

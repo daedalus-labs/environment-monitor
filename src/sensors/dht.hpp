@@ -60,6 +60,8 @@ public:
      */
     DHTType type() const;
 
+    void read();
+
 private:
     /**
      * Checks for the sensor's response indicating it is ready to be read from.

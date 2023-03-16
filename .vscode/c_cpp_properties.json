@@ -26,7 +26,8 @@
                 "${workspaceFolder}/build/generated/pico_base/**"
             ],
             "defines": [
-                "PICO_CYW43_ARCH_POLL"
+                "PICO_CYW43_ARCH_POLL",
+                "RASPBERRYPI_PICO_W"
             ],
             "compilerPath": "/usr/bin/arm-none-eabi-g++",
             "cStandard": "c11",
