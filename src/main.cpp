@@ -27,6 +27,7 @@ int main(int argc, char** argv)
     DHT sensor(DHTType::DHT22, DHT_DATA_PIN, DHT_FEEDBACK_PIN);
 
     sleep_ms(10000);
+    DHT sensor(DHTType::DHT22, DHT_DATA_PIN, DHT_FEEDBACK_PIN);
 
     while (true) {
         sensor.read();
