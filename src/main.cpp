@@ -8,21 +8,12 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "sensors/dht.hpp"
 #include "utilities.hpp"
 
-#include <boards/pico_w.h>
 #include <hardware/gpio.h>
 #include <pico/stdio.h>
 #include <pico/stdlib.h>
 
 #include <cstdint>
 #include <cstdio>
-
-#ifdef RASPBERRYPI_PICO_W
-inline constexpr uint8_t LED_PIN = 13;
-#else
-inline constexpr uint8_t LED_PIN = PICO_DEFAULT_LED_PIN;
-#endif
-
-inline constexpr uint8_t DHT_DATA_PIN = 18;
 
 
 int main(int argc, char** argv)
@@ -32,7 +23,7 @@ int main(int argc, char** argv)
     WifiConnection wifi(SSID, PASSPHRASE);
     printf("Wifi Connection Status: %s\n", toString(wifi.status()).data());
 
-    DHT sensor(DHTType::DHT22, DHT_DATA_PIN, LED_PIN);
+    DHT sensor(DHTType::DHT22, DHT_DATA_PIN, DHT_FEEDBACK_PIN);
 
     while (true) {
         sleep_ms(10000);
