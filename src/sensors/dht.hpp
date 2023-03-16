@@ -113,6 +113,17 @@ private:
      */
     void _start();
 
+    /**
+     * Waits on the sensor's data pin to become @a desired_state.
+     *
+     * Will timeout after @a wait_length, and return false.
+     *
+     * @param[in] desired_state The desired state of the sensor's data pin.
+     * @param[in] wait_length The time to wait for it to enter this state in microseconds (us).
+     * @return True if the wait was successful, false otherwise.
+     */
+    bool _wait(uint32_t desired_state, uint64_t wait_length) const;
+
     float _humidity;
     float _temperature;
     DHTType _type;
