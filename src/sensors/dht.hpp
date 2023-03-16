@@ -46,14 +46,19 @@ public:
     DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin);
 
     /**
+     * @return The measured temperature in degrees Celsius.
+     */
+    float celsius() const;
+
+    /**
+     * @return The measured temperature in degrees Fahrenheit.
+     */
+    float fahrenheit() const;
+
+    /**
      * @return The measured humidity as a percentage.
      */
     float humidity() const;
-
-    /**
-     * @return The measured temperature in degrees Celsius.
-     */
-    float temperature() const;
 
     /**
      * @return The type of DHT sensor.
