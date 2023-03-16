@@ -53,6 +53,8 @@ target_include_directories(
 target_sources(
     ${PROJECT_NAME}
     PRIVATE
+        src/logging/logger.cpp
+        
         src/sensors/dht.cpp
 
         src/main.cpp
