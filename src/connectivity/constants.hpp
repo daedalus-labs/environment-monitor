@@ -16,3 +16,4 @@ inline constexpr std::string_view WIFI_STATUS_INITIALIZATION_FAILURE = "INITIALI
 inline constexpr std::string_view WIFI_STATUS_WIFI_CONNECTION_FAILURE = "WIFI_CONNECTION_FAILURE";
 inline constexpr std::string_view WIFI_STATUS_SERVER_CONNECTION_FAILURE = "SERVER_CONNECTION_FAILURE";
 inline constexpr std::string_view WIFI_STATUS_UNKNOWN = "UNKNOWN";
+inline constexpr std::string_view UNKNOWN_IP = "-";

@@ -8,6 +8,8 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "connectivity/detail/communication.hpp"
 #include "connectivity/detail/wifi-state.hpp"
 
+#include <lwip/ip.h>
+#include <lwip/netif.h>
 #include <lwip/pbuf.h>
 #include <lwip/tcp.h>
 #include <pico/cyw43_arch.h>
@@ -16,9 +18,10 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <pico/stdlib.h>
 
 #include <cstdint>
+#include <string>
 
 
-WifiConnection::WifiConnection(std::string_view ip_address, uint16_t port, std::string_view ssid, std::string_view passphrase) : _state(nullptr)
+WifiConnection::WifiConnection(std::string_view ip_address, uint16_t port, std::string_view ssid, std::string_view passphrase) : _state(nullptr), _address()
 {
     int32_t result = cyw43_arch_init_with_country(CYW43_COUNTRY_USA);
     if (result != PICO_OK) {
@@ -32,8 +35,13 @@ WifiConnection::WifiConnection(std::string_view ip_address, uint16_t port, std::
         return;
     }
 
+    uint8_t buffer[6];
+    cyw43_hal_get_mac(0, buffer);
+    for (size_t i = 0; i < _address.size(); i++) {
+        _address[i] = buffer[i];
+    }
+
     _connectToWireless(ssid, passphrase);
-    _connectToServer(ip_address, port);
 }
 
 WifiConnection::~WifiConnection()
@@ -43,6 +51,35 @@ WifiConnection::~WifiConnection()
     }
 
     cyw43_arch_deinit();
+}
+
+std::string WifiConnection::ipAddress() const
+{
+    if (netif_default) {
+        return ipaddr_ntoa(&netif_default->ip_addr);
+    }
+    return std::string(UNKNOWN_IP.data(), UNKNOWN_IP.length());
+}
+
+std::string WifiConnection::netmask() const
+{
+    if (netif_default) {
+        return ipaddr_ntoa(&netif_default->netmask);
+    }
+    return std::string(UNKNOWN_IP.data(), UNKNOWN_IP.length());
+}
+
+std::string WifiConnection::gateway() const
+{
+    if (netif_default) {
+        return ipaddr_ntoa(&netif_default->gw);
+    }
+    return std::string(UNKNOWN_IP.data(), UNKNOWN_IP.length());
+}
+
+const MACAddress& WifiConnection::macAddress() const
+{
+    return _address;
 }
 
 ConnectionStatus WifiConnection::status() const

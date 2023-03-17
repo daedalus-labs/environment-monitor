@@ -26,10 +26,16 @@ int main(int argc, char** argv)
 
     DHT sensor(DHTType::DHT22, DHT_DATA_PIN, DHT_FEEDBACK_PIN);
 
+    sleep_ms(10000);
+
     while (true) {
-        sleep_ms(10000);
         sensor.read();
         printf("Temperature: %.1fC (%.1fF), Humidity: %.1f%%\n", sensor.celsius(), sensor.fahrenheit(), sensor.humidity());
+
+        wifi.poll();
+        printf("Wifi Connection Status: %s (%s | %s | %s)\n", toString(wifi.status()).data(), wifi.ipAddress().c_str(), wifi.gateway().c_str(), wifi.netmask().c_str());
+
+        sleep_ms(10000);
     }
 
     return 0;
