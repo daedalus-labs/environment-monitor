@@ -33,9 +33,10 @@ inline constexpr uint64_t MAX_WAIT_TIME_US = 100;
 inline constexpr uint64_t LOGICAL_ZERO_THRESHOLD_US = 40;
 inline constexpr uint64_t READ_REQUEST_LOW_TIME_MS = 20;
 inline constexpr uint64_t READ_REQUEST_HIGH_TIME_US = 30;
+inline constexpr uint64_t SENSOR_SETTLE_TIME_MS = 30000;
 
-DHT::DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin)
-    : _humidity(DEFAULT_HUMIDITY), _temperature(DEFAULT_TEMPERATURE), _type(type), _data_pin(data_pin), _feedback_led_pin(feedback_led_pin)
+DHT::DHT(DHTType type, uint8_t power_pin, uint8_t data_pin, uint8_t feedback_led_pin)
+    : _humidity(DEFAULT_HUMIDITY), _temperature(DEFAULT_TEMPERATURE), _type(type), _power_pin(power_pin), _data_pin(data_pin), _feedback_led_pin(feedback_led_pin)
 {
     if (_feedback_led_pin < NUM_BANK0_GPIOS) {
         gpio_init(_feedback_led_pin);
@@ -47,6 +48,8 @@ DHT::DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin)
     }
 
     gpio_init(_data_pin);
+    gpio_init(_power_pin);
+    gpio_set_dir(_power_pin, GPIO_OUT);
 }
 
 float DHT::celsius() const
@@ -69,9 +72,45 @@ DHTType DHT::type() const
     return _type;
 }
 
-void DHT::read()
+void DHT::refresh()
 {
-    _read();
+    Frame data;
+
+    _setLED(ON);
+    _start();
+
+    if (!_checkResponse()) {
+        _setLED(OFF);
+        _temperature = DEFAULT_TEMPERATURE;
+        _humidity = DEFAULT_HUMIDITY;
+        printf("DHT Sensor did not respond to reset\n");
+        return;
+    }
+
+    for (size_t index = 0; index < data.size(); index++) {
+        data[index] = _getDataByte();
+    }
+
+    uint8_t calculated_parity = data[HUMIDITY_MSB_INDEX] + data[HUMIDITY_LSB_INDEX] + data[TEMP_MSB_INDEX] + data[TEMP_LSB_INDEX];
+    if (calculated_parity != data[PARITY_INDEX]) {
+        printf("DHT data parity check failed (%u != %u)\n", calculated_parity, data[PARITY_INDEX]);
+        _setLED(OFF);
+        return;
+    }
+
+    _setLED(OFF);
+    _parse(data);
+}
+
+void DHT::wake()
+{
+    gpio_put(_power_pin, ON);
+    sleep_ms(SENSOR_SETTLE_TIME_MS);
+}
+
+void DHT::sleep()
+{
+    gpio_put(_power_pin, OFF);
 }
 
 bool DHT::_checkResponse() const
@@ -153,36 +192,6 @@ void DHT::_parse(const Frame& data)
     if (data[TEMP_MSB_INDEX] & 0x80) {
         _temperature = -1 * _temperature;
     }
-}
-
-void DHT::_read()
-{
-    Frame data;
-
-    _setLED(ON);
-    _start();
-
-    if (!_checkResponse()) {
-        _setLED(OFF);
-        _temperature = DEFAULT_TEMPERATURE;
-        _humidity = DEFAULT_HUMIDITY;
-        printf("DHT Sensor did not respond to reset\n");
-        return;
-    }
-
-    for (size_t index = 0; index < data.size(); index++) {
-        data[index] = _getDataByte();
-    }
-
-    uint8_t calculated_parity = data[HUMIDITY_MSB_INDEX] + data[HUMIDITY_LSB_INDEX] + data[TEMP_MSB_INDEX] + data[TEMP_LSB_INDEX];
-    if (calculated_parity != data[PARITY_INDEX]) {
-        printf("DHT data parity check failed (%u != %u)\n", calculated_parity, data[PARITY_INDEX]);
-        _setLED(OFF);
-        return;
-    }
-
-    _setLED(OFF);
-    _parse(data);
 }
 
 void DHT::_setLED(uint8_t state) const

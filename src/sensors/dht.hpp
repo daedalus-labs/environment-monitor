@@ -40,10 +40,11 @@ public:
      * Constructor.
      *
      * @param[in] type The type of sensor.
+     * @param[in] data_pin The power pin of the DHT sensor.
      * @param[in] data_pin The data pin of the DHT sensor.
      * @param[in] feedback_led_pin The pin of the LED to toggle on/off. If provided, the LED will be on when data is being read from the sensor, and off otherwise.
      */
-    DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin);
+    DHT(DHTType type, uint8_t power_pin, uint8_t data_pin, uint8_t feedback_led_pin);
 
     /**
      * @return The measured temperature in degrees Celsius.
@@ -65,7 +66,20 @@ public:
      */
     DHTType type() const;
 
-    void read();
+    /**
+     * Refreshes all sensor data from the DHT sensor.
+     */
+    void refresh();
+
+    /**
+     * Wakes the sensor and blocks for a period of time to ensure it has settled.
+     */
+    void wake();
+
+    /**
+     * Puts the sensor to sleep to save power.
+     */
+    void sleep();
 
 private:
     /**
@@ -97,11 +111,6 @@ private:
     void _parse(const Frame& data);
 
     /**
-     * Reads data from the sensor.
-     */
-    void _read();
-
-    /**
      * Sets the LED to the value indicated by @a state.
      *
      * @param[in] state The desired state of the LED.
@@ -127,6 +136,7 @@ private:
     float _humidity;
     float _temperature;
     DHTType _type;
+    uint8_t _power_pin;
     uint8_t _data_pin;
     uint8_t _feedback_led_pin;
 };
