@@ -7,10 +7,6 @@ include(cmake/pico-sdk.cmake)
 project(environment-monitor C CXX ASM)
 string(TIMESTAMP BUILD_TIME "%s")
 
-if(NOT DEFINED BUILD_VERSION)
-    set(BUILD_VERSION "0.0.0+${BUILD_TIME}")
-endif()
-
 if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
     set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -24,6 +20,18 @@ initialize_pico()
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if(NOT DEFINED BUILD_VERSION)
+    set(BUILD_VERSION "0.0.0+${BUILD_TIME}")
+endif()
+
+if((NOT DEFINED SERVER_IP) OR (NOT DEFINED SSID))
+    message("In order to use wireless connectivity, you will need to supply SERVER_IP and SSID")
+endif()
+
+if(NOT DEFINED SERVER_PORT)
+    set(SERVER_PORT 4242)
+endif()
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/configuration.hpp.in
@@ -54,6 +62,7 @@ target_include_directories(
 target_sources(
     ${PROJECT_NAME}
     PRIVATE
+        src/connectivity/connection-status.cpp
         src/connectivity/wifi-connection.cpp
         src/sensors/dht.cpp
 

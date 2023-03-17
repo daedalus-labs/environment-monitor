@@ -2,6 +2,7 @@
 Copyright 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
+#include "connectivity/connection-status.hpp"
 #include "connectivity/wifi-connection.hpp"
 #include "generated/configuration.hpp"
 #include "sensors/constants.hpp"
@@ -20,7 +21,7 @@ int main(int argc, char** argv)
 {
     stdio_init_all();
 
-    WifiConnection wifi(SSID, PASSPHRASE);
+    WifiConnection wifi(SERVER_IP, SERVER_PORT, SSID, PASSPHRASE);
     printf("Wifi Connection Status: %s\n", toString(wifi.status()).data());
 
     DHT sensor(DHTType::DHT22, DHT_DATA_PIN, DHT_FEEDBACK_PIN);

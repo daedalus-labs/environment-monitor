@@ -7,9 +7,12 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <string_view>
 
 inline constexpr uint32_t WIFI_TIMEOUT_MS = 30000;
-inline constexpr uint16_t SERVER_MANAGE_PORT = 5009;
+inline constexpr uint32_t POLL_WAIT_TIME_MS = 2000;
+inline constexpr uint32_t POLL_TIME_S = 5;
 inline constexpr std::string_view WIFI_STATUS_CONNECTED = "CONNECTED";
-inline constexpr std::string_view WIFI_STATUS_CONNECTING = "CONNECTING";
+inline constexpr std::string_view WIFI_STATUS_WIFI_CONNECTING = "WIFI_CONNECTING";
+inline constexpr std::string_view WIFI_STATUS_CONNECTING_TO_SERVER = "CONNECTING_TO_SERVER";
 inline constexpr std::string_view WIFI_STATUS_INITIALIZATION_FAILURE = "INITIALIZATION_FAILURE";
-inline constexpr std::string_view WIFI_STATUS_CONNECTION_FAILURE = "CONNECTION_FAILURE";
+inline constexpr std::string_view WIFI_STATUS_WIFI_CONNECTION_FAILURE = "WIFI_CONNECTION_FAILURE";
+inline constexpr std::string_view WIFI_STATUS_SERVER_CONNECTION_FAILURE = "SERVER_CONNECTION_FAILURE";
 inline constexpr std::string_view WIFI_STATUS_UNKNOWN = "UNKNOWN";
