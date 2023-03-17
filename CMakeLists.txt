@@ -26,7 +26,7 @@ if(NOT DEFINED BUILD_VERSION)
 endif()
 
 if((NOT DEFINED SERVER_IP) OR (NOT DEFINED SSID))
-    message("In order to use wireless connectivity, you will need to supply SERVER_IP and SSID")
+    message(WARNING "In order to use wireless connectivity, you will need to supply SERVER_IP and SSID")
 endif()
 
 if(NOT DEFINED SERVER_PORT)
