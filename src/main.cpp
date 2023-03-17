@@ -21,7 +21,7 @@ int main(int argc, char** argv)
 {
     stdio_init_all();
 
-    WifiConnection wifi(SERVER_IP, SERVER_PORT, SSID, PASSPHRASE);
+    WifiConnection wifi(SSID, PASSPHRASE);
     printf("Wifi Connection Status: %s\n", toString(wifi.status()).data());
 
     DHT sensor(DHTType::DHT22, DHT_DATA_PIN, DHT_FEEDBACK_PIN);
