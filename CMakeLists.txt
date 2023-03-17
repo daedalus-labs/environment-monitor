@@ -1,15 +1,15 @@
 # cmake-format: off
 cmake_minimum_required(VERSION 3.17.0)
 
+if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
 # Must setup the PICO SDK before the project macro call
 include(cmake/pico-sdk.cmake)
 
 project(environment-monitor C CXX ASM)
 string(TIMESTAMP BUILD_TIME "%s")
-
-if(NOT CMAKE_BUILD_TYPE STREQUAL Debug)
-    set(CMAKE_BUILD_TYPE Release)
-endif()
 
 ###################
 ## CONFIGURATION ##
@@ -25,7 +25,7 @@ if(NOT DEFINED BUILD_VERSION)
     set(BUILD_VERSION "0.0.0+${BUILD_TIME}")
 endif()
 
-if((NOT DEFINED SERVER_IP) OR (NOT DEFINED SSID))
+if((NOT DEFINED SERVER_IP) OR (NOT DEFINED WIRELESS_SSID))
     message(WARNING "In order to use wireless connectivity, you will need to supply SERVER_IP and SSID")
 endif()
 
