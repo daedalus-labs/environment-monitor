@@ -1,3 +1,4 @@
+// clang-format off
 #pragma once
 
 #include <string_view>
@@ -8,5 +9,19 @@ inline constexpr std::string_view SSID = "@WIRELESS_SSID@";
 /** Wireless Passphrase (Pico W) */
 inline constexpr std::string_view PASSPHRASE = "@WIRELESS_PASSPHRASE@";
 
+/** IPv4 Address of the device receiving the data (Pico W) */
+inline constexpr std::string_view SERVER_IP = "@SERVER_IP@";
+
+/** Port of the device receiving the data (Pico W) */
+inline constexpr uint16_t SERVER_PORT = @SERVER_PORT@;
+
 /** Monitor Build Version */
 inline constexpr std::string_view VERSION = "@BUILD_VERSION@";
+
+/** GPIO Pin for the Feedback LED used by the DHT Sensor */
+inline constexpr uint8_t DHT_FEEDBACK_PIN = @DHT_FEEDBACK_PIN@;
+
+/** GPIO Pin for DHT Sensor Sensor data */
+inline constexpr uint8_t DHT_DATA_PIN = @DHT_DATA_PIN@;
+
+// clang-format on

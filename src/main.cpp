@@ -2,12 +2,13 @@
 Copyright 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
+#include "connectivity/connection-status.hpp"
+#include "connectivity/wifi-connection.hpp"
 #include "generated/configuration.hpp"
 #include "sensors/constants.hpp"
 #include "sensors/dht.hpp"
 #include "utilities.hpp"
 
-#include <boards/pico_w.h>
 #include <hardware/gpio.h>
 #include <pico/stdio.h>
 #include <pico/stdlib.h>
@@ -15,25 +16,26 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <cstdint>
 #include <cstdio>
 
-#ifdef RASPBERRYPI_PICO_W
-inline constexpr uint8_t LED_PIN = 13;
-#else
-inline constexpr uint8_t LED_PIN = PICO_DEFAULT_LED_PIN;
-#endif
-
-inline constexpr uint8_t DHT_DATA_PIN = 18;
-
 
 int main(int argc, char** argv)
 {
     stdio_init_all();
 
-    DHT sensor(DHTType::DHT22, DHT_DATA_PIN, LED_PIN);
+    WifiConnection wifi(SERVER_IP, SERVER_PORT, SSID, PASSPHRASE);
+    printf("Wifi Connection Status: %s\n", toString(wifi.status()).data());
+
+    DHT sensor(DHTType::DHT22, DHT_DATA_PIN, DHT_FEEDBACK_PIN);
+
+    sleep_ms(10000);
 
     while (true) {
-        sleep_ms(10000);
         sensor.read();
         printf("Temperature: %.1fC (%.1fF), Humidity: %.1f%%\n", sensor.celsius(), sensor.fahrenheit(), sensor.humidity());
+
+        wifi.poll();
+        printf("Wifi Connection Status: %s (%s | %s | %s)\n", toString(wifi.status()).data(), wifi.ipAddress().c_str(), wifi.gateway().c_str(), wifi.netmask().c_str());
+
+        sleep_ms(10000);
     }
 
     return 0;

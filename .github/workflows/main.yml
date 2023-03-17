@@ -8,22 +8,22 @@ jobs:
       PICO_SDK_PATH: /etc/pico-sdk
 
     steps:
-    - name: Set Build Version (Tag)
-      run: echo "build_version=${{  github.ref_name }}" >> $GITHUB_ENV
-      if: ${{ github.ref_type == 'tag' }}
-      
-    - name: Set Build Version (Branch)
-      run: echo "build_version=0.0.0-${{  github.run_number }}" >> $GITHUB_ENV
-      if: ${{ github.ref_type == 'branch' }}
-      
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Set Build Version (Tag)
+        run: echo "build_version=${{  github.ref_name }}" >> $GITHUB_ENV
+        if: ${{ github.ref_type == 'tag' }}
 
-    - name: Build Environment Monitor
-      run: bash build.bash --build -DBUILD_VERSION=${{ env.build_version }}
+      - name: Set Build Version (Branch)
+        run: echo "build_version=0.0.0-${{  github.run_number }}" >> $GITHUB_ENV
+        if: ${{ github.ref_type == 'branch' }}
 
-    - name: Upload Environment Monitor
-      uses: actions/upload-artifact@v3
-      with:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build Environment Monitor
+        run: bash build.bash --build -DBUILD_VERSION=${{ env.build_version }}
+
+      - name: Upload Environment Monitor
+        uses: actions/upload-artifact@v3
+        with:
           name: Environment Monitor firmware
           path: build/environment-monitor.uf2
