@@ -7,7 +7,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <cstdint>
 #include <string_view>
 
-
+/** Enumeration of the possible status values of a Wireless Connection */
 enum class ConnectionStatus : uint8_t
 {
     CONNECTED = 0x00,
@@ -18,4 +18,10 @@ enum class ConnectionStatus : uint8_t
     SERVER_CONNECTION_FAILURE
 };
 
+/**
+ * Converts @a status to a human readable string.
+ *
+ * @param[in] status The ConnectionStatus value.
+ * @return A human readable name for @a status.
+ */
 std::string_view toString(ConnectionStatus status);

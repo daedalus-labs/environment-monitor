@@ -33,6 +33,14 @@ if(NOT DEFINED SERVER_PORT)
     set(SERVER_PORT 4242)
 endif()
 
+if(NOT DEFINED DHT_FEEDBACK_PIN)
+    set(DHT_FEEDBACK_PIN 13)
+endif()
+
+if(NOT DEFINED DHT_DATA_PIN)
+    set(DHT_DATA_PIN 18)
+endif()
+
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/configuration.hpp.in
     ${CMAKE_BINARY_DIR}/generated/configuration.hpp

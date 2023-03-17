@@ -16,7 +16,7 @@ case "$1" in
         run-clang-tidy -p build -quiet -export-fixes build/clang-tidy-fixes.yaml
         ;;
     "--build")
-        cmake -B build  -S . -DPICO_SDK_PATH=$sdk_path -DDHT_FEEDBACK_PIN=13 -DDHT_DATA_PIN=18 "${@:2}"
+        cmake -B build  -S . -DPICO_SDK_PATH=$sdk_path "${@:2}"
         cmake --build build --parallel $job_count
         ;;
     "--clean")
