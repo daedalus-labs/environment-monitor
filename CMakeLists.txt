@@ -41,6 +41,10 @@ if(NOT DEFINED DHT_DATA_PIN)
     set(DHT_DATA_PIN 18)
 endif()
 
+if(NOT DEFINED DHT_POWER_PIN)
+    set(DHT_POWER_PIN 19)
+endif()
+
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/src/generated/configuration.hpp.in
     ${CMAKE_BINARY_DIR}/generated/configuration.hpp
@@ -81,6 +85,7 @@ target_sources(
 target_link_libraries(
     ${PROJECT_NAME}
     pico_cyw43_arch_lwip_poll
+    pico_multicore
     pico_stdlib
     hardware_i2c
 )
