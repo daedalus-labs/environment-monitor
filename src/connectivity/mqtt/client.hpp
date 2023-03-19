@@ -5,6 +5,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #pragma once
 
 #include <lwip/apps/mqtt.h>
+#include <lwip/ip_addr.h>
 
 #include <cstdint>
 #include <string>
@@ -12,6 +13,8 @@ SPDX-License-Identifier: BSD-3-Clause
 
 
 namespace mqtt {
+class ClientInfo;
+
 class Client
 {
 public:
@@ -24,7 +27,10 @@ public:
 
 private:
     mqtt_client_t* _mqtt;
+    ClientInfo* _info;
     std::string _broker;
     uint16_t _port;
+    ip_addr_t _broker_address;
+    mqtt_connect_client_info_t _mqtt_client_info;
 };
 } // namespace mqtt
