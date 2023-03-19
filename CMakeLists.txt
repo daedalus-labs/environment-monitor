@@ -78,6 +78,10 @@ target_include_directories(
 target_sources(
     ${PROJECT_NAME}
     PRIVATE
+        src/connectivity/dns/resolver.cpp
+
+        src/connectivity/mqtt/client.cpp
+
         src/connectivity/connection-status.cpp
         src/connectivity/wifi-connection.cpp
 

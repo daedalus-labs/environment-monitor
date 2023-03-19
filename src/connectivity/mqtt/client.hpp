@@ -13,26 +13,31 @@ SPDX-License-Identifier: BSD-3-Clause
 
 
 namespace mqtt {
-class ClientInfo;
+enum class QoS : uint8_t
+{
+    AT_MOST_ONCE = 0,
+    AT_LEAST_ONCE = 1,
+    EXACTLY_ONCE = 2
+};
 
 class Client
 {
 public:
-    Client(std::string_view broker, uint16_t port, std::string_view user, std::string_view password);
+    Client(std::string_view broker, uint16_t port, std::string_view client_name, std::string_view user, std::string_view password);
     ~Client();
 
     bool connect();
     bool disconnect();
-    bool publish();
+    bool publish(std::string_view topic, void* payload, uint16_t size, QoS qos, bool retain);
 
 private:
     mqtt_client_t* _mqtt;
-    ClientInfo* _info;
     std::string _broker;
     uint16_t _port;
     ip_addr_t _broker_address;
+    std::string _name;
     std::string _user;
     std::string _password;
-    mqtt_connect_client_info_t _mqtt_client_info;
+    mqtt_connect_client_info_t _info;
 };
 } // namespace mqtt
