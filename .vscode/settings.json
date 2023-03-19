@@ -54,6 +54,7 @@
     },
     "cSpell.words": [
         "gpio",
+        "MQTT",
         "netif",
         "Pico",
         "Pimoroni",

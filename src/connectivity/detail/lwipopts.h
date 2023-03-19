@@ -91,4 +91,11 @@ SPDX-License-Identifier: BSD-3-Clause
 #define SLIP_DEBUG       LWIP_DBG_OFF
 #define DHCP_DEBUG       LWIP_DBG_OFF
 
+// ------------------ MQTT ----------------- //
+
+// You need to increase MEMP_NUM_SYS_TIMEOUT by one if you use MQTT!
+// see https://forums.raspberrypi.com/viewtopic.php?t=341914
+#define MEMP_NUM_SYS_TIMEOUT   (LWIP_NUM_SYS_TIMEOUT_INTERNAL + 1)
+#define MQTT_REQ_MAX_IN_FLIGHT (5)
+
 #endif

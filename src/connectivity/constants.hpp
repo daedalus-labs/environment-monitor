@@ -6,6 +6,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <cstdint>
 #include <string_view>
 
+
 inline constexpr uint32_t WIFI_TIMEOUT_MS = 30000;
 inline constexpr uint32_t POLL_WAIT_TIME_MS = 2000;
 inline constexpr uint32_t POLL_TIME_S = 5;
