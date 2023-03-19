@@ -54,6 +54,7 @@
     },
     "cSpell.words": [
         "gpio",
+        "inpub",
         "MQTT",
         "netif",
         "Pico",
