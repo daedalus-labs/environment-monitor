@@ -5,6 +5,7 @@ SPDX-License-Identifier: BSD-3-Clause
 
 #include "connectivity/mqtt/client.hpp"
 
+#include "connectivity/constants.hpp"
 #include "connectivity/dns/resolver.hpp"
 
 #include <lwip/apps/mqtt.h>
@@ -14,19 +15,64 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <cstdio>
 
 
-inline constexpr uint16_t KEEP_ALIVE_TIMEOUT_S = 120;
-
-static void onConnectionComplete(mqtt_client_t* /* unused */, void* arg, mqtt_connection_status_t status)
+/**
+ * Callback for handling connection results of a connection request.
+ *
+ * Called when a connection request has completed.
+ *
+ * @param[in] client The MQTT client handle.
+ * @param[in] arg Additional data passed to the callback.
+ * @param[in] status The connection status.
+ */
+static void onConnectionComplete(mqtt_client_t* client, void* arg, mqtt_connection_status_t status)
 {}
 
-static void onDataReceived(void* arg, const u8_t* data, u16_t len, u8_t flags)
-{}
+/**
+ * Callback for handling incoming message data.
+ *
+ * Called when data is received on a subscribed topic.
+ *
+ * @note @a flags will be MQTT_DATA_FLAG_LAST when all message data has been received.
+ * @param[in] arg Additional data passed to the callback.
+ * @param[in] data The amount of message data provided to this callback, or NULL if all data has been received.
+ * @param[in] length The length of the fragment of message data.
+ * @param[in] flags Any MQTT flags set by the caller.
+ */
+static void onDataReceived(void* arg, const u8_t* data, u16_t length, u8_t flags)
+{
+    // This function is intentionally empty
+    //  - It is being left as a skeleton for future use.
+}
 
-static void onTopicUpdated(void* arg, const char* topic, u32_t tot_len)
-{}
+/**
+ * Callback for handling a publish notification on a subscribed topic.
+ *
+ * Called when the client is notified of a publish on a subscribed topic.
+ *
+ * @param[in] arg Additional data passed to the callback.
+ * @param[in] topic The topic name.
+ * @param[in] total_length The total length of the data published at @a topic.
+ */
+static void onTopicUpdated(void* arg, const char* topic, u32_t total_length)
+{
+    // This function is intentionally empty
+    //  - It is being left as a skeleton for future use.
+}
 
-static void onRequestComplete(void* arg, err_t err)
-{}
+/**
+ * Callback for handling a completed request.
+ *
+ * Called when a subscribe, unsubscribe or publish request has completed
+ *
+ * @param[in] arg Additional data passed to the callback.
+ * @param[in] error The error which occurred, or ERR_OK if no error occurred.
+ */
+static void onRequestComplete(void* arg, err_t error)
+{
+    if (error != ERR_OK) {
+        printf("Previous request failed: %s\n", lwip_strerr(error));
+    }
+}
 
 namespace mqtt {
 
@@ -45,8 +91,8 @@ Client::Client(std::string_view broker, uint16_t port, std::string_view client_n
     _info.client_user = _user.c_str();
     _info.keep_alive = KEEP_ALIVE_TIMEOUT_S;
     _info.will_msg = NULL;
-    _info.will_qos = 0;
-    _info.will_retain = 0;
+    _info.will_qos = OFF;
+    _info.will_retain = OFF;
     _info.will_topic = NULL;
 #if LWIP_ALTCP && LWIP_ALTCP_TLS
     _info.tls_config = NULL;
@@ -60,6 +106,11 @@ Client::~Client()
     mqtt_disconnect(_mqtt);
     mqtt_client_free(_mqtt);
     cyw43_arch_lwip_end();
+}
+
+bool Client::connected() const
+{
+    return mqtt_client_is_connected(_mqtt) == CONNECTED;
 }
 
 bool Client::connect()
@@ -76,7 +127,7 @@ bool Client::connect()
     cyw43_arch_lwip_end();
 
     if (error != ERR_OK) {
-        printf("Connection to %s unsuccessful (%d)\n", _broker.c_str(), error);
+        printf("Connection to %s unsuccessful: %s\n", _broker.c_str(), lwip_strerr(error));
         return false;
     }
     return true;
@@ -100,7 +151,7 @@ bool Client::publish(std::string_view topic, void* payload, uint16_t size, QoS q
     cyw43_arch_lwip_end();
 
     if (error != ERR_OK) {
-        printf("Publish of %s unsuccessful (%d)\n", topic.data(), error);
+        printf("Publish of %s unsuccessful: %s\n", topic.data(), lwip_strerr(error));
         return false;
     }
     return true;

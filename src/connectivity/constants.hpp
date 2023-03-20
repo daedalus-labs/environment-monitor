@@ -18,3 +18,11 @@ inline constexpr std::string_view WIFI_STATUS_WIFI_CONNECTION_FAILURE = "WIFI_CO
 inline constexpr std::string_view WIFI_STATUS_SERVER_CONNECTION_FAILURE = "SERVER_CONNECTION_FAILURE";
 inline constexpr std::string_view WIFI_STATUS_UNKNOWN = "UNKNOWN";
 inline constexpr std::string_view UNKNOWN_IP = "-";
+
+namespace mqtt {
+inline constexpr uint16_t KEEP_ALIVE_TIMEOUT_S = 120;
+inline constexpr uint8_t OFF = 0;
+inline constexpr uint8_t ON = 1;
+inline constexpr uint8_t CONNECTED = ON;
+inline constexpr uint8_t DISCONNECTED = OFF;
+} // namespace mqtt

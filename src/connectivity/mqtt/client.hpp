@@ -27,6 +27,7 @@ public:
     ~Client();
 
     bool connect();
+    bool connected() const;
     bool disconnect();
     bool publish(std::string_view topic, void* payload, uint16_t size, QoS qos, bool retain);
 

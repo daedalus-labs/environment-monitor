@@ -53,6 +53,7 @@
         "*.in": "cpp"
     },
     "cSpell.words": [
+        "ALTCP",
         "gpio",
         "inpub",
         "MQTT",
@@ -60,8 +61,10 @@
         "Pico",
         "Pimoroni",
         "Porembski",
+        "pulished",
         "RASPBERRYPI",
         "SSID",
-        "VREF"
+        "VREF",
+        "strerr"
     ]
 }
