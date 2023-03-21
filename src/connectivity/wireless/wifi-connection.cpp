@@ -2,7 +2,7 @@
 Copyright 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
-#include "connectivity/wifi-connection.hpp"
+#include "connectivity/wireless/wifi-connection.hpp"
 
 #include "connectivity/constants.hpp"
 #include "connectivity/detail/communication.hpp"

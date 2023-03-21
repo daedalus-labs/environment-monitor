@@ -4,9 +4,6 @@ SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
 #pragma once
 
-#include "connectivity/connection-status.hpp"
-#include "connectivity/detail/wifi-state.hpp"
-
 #include <lwip/pbuf.h>
 #include <lwip/tcp.h>
 

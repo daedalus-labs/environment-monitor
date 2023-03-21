@@ -25,12 +25,8 @@ if(NOT DEFINED BUILD_VERSION)
     set(BUILD_VERSION "0.0.0+${BUILD_TIME}")
 endif()
 
-if((NOT DEFINED SERVER_IP) OR (NOT DEFINED WIRELESS_SSID))
-    message(WARNING "In order to use wireless connectivity, you will need to supply SERVER_IP and SSID")
-endif()
-
-if(NOT DEFINED SERVER_PORT)
-    set(SERVER_PORT 4242)
+if(NOT DEFINED MQTT_PORT)
+    set(MQTT_PORT 1883)
 endif()
 
 if(NOT DEFINED DHT_FEEDBACK_PIN)
@@ -79,8 +75,9 @@ target_sources(
     ${PROJECT_NAME}
     PRIVATE
         src/connectivity/dns/resolver.cpp
-
         src/connectivity/mqtt/client.cpp
+        src/connectivity/wireless/connection-status.cpp
+        src/connectivity/wireless/wifi-connection.cpp
 
         src/connectivity/connection-status.cpp
         src/connectivity/wifi-connection.cpp
@@ -96,6 +93,7 @@ target_sources(
 target_link_libraries(
     ${PROJECT_NAME}
     pico_cyw43_arch_lwip_poll
+    pico_lwip_mqtt
     pico_stdlib
     hardware_adc
     hardware_i2c

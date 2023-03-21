@@ -2,8 +2,8 @@
 Copyright 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
-#include "connectivity/connection-status.hpp"
-#include "connectivity/wifi-connection.hpp"
+#include "connectivity/mqtt.hpp"
+#include "connectivity/wireless.hpp"
 #include "generated/configuration.hpp"
 #include "sensors/board.hpp"
 #include "sensors/constants.hpp"
@@ -26,8 +26,7 @@ int main(int argc, char** argv)
     adc_init();
 
     WifiConnection wifi(SSID, PASSPHRASE);
-    printf("Wifi Connection Status: %s\n", toString(wifi.status()).data());
-
+    mqtt::Client mqtt(MQTT_BROKER, CONFIGURED_MQTT_PORT, DEVICE_NAME);
     DHT sensor(DHTType::DHT22, DHT_DATA_PIN, DHT_FEEDBACK_PIN);
     sensors::LiPoShim battery(BATTERY_VOLTAGE_PIN, BATTERY_CHARGING_PIN);
     sensors::Board board;

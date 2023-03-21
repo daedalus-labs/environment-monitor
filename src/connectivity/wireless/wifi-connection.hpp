@@ -4,7 +4,7 @@ SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
 #pragma once
 
-#include "connectivity/connection-status.hpp"
+#include "connectivity/wireless/connection-status.hpp"
 
 #include <array>
 #include <cstdint>

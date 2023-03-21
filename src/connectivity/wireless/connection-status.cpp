@@ -3,9 +3,11 @@ Copyright 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
 
-#include "connectivity/connection-status.hpp"
+#include "connectivity/wireless/connection-status.hpp"
 
 #include "connectivity/constants.hpp"
+
+#include <string_view>
 
 
 std::string_view toString(ConnectionStatus status)

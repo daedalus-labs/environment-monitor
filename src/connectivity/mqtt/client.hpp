@@ -23,6 +23,7 @@ enum class QoS : uint8_t
 class Client
 {
 public:
+    Client(std::string_view broker, uint16_t port, std::string_view client_name);
     Client(std::string_view broker, uint16_t port, std::string_view client_name, std::string_view user, std::string_view password);
     ~Client();
 

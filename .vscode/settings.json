@@ -50,7 +50,9 @@
         "thread": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp",
-        "*.in": "cpp"
+        "*.in": "cpp",
+        "fstream": "cpp",
+        "istream": "cpp"
     },
     "cSpell.words": [
         "ALTCP",

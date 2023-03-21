@@ -75,6 +75,21 @@ static void onRequestComplete(void* arg, err_t error)
 }
 
 namespace mqtt {
+Client::Client(std::string_view broker, uint16_t port, std::string_view client_name)
+    : _mqtt(mqtt_client_new()), _broker(broker), _port(port), _broker_address(), _name(client_name), _user(), _password(), _info()
+{
+    _info.client_id = _name.c_str();
+    _info.client_pass = NULL;
+    _info.client_user = NULL;
+    _info.keep_alive = KEEP_ALIVE_TIMEOUT_S;
+    _info.will_msg = NULL;
+    _info.will_qos = OFF;
+    _info.will_retain = OFF;
+    _info.will_topic = NULL;
+#if LWIP_ALTCP && LWIP_ALTCP_TLS
+    _info.tls_config = NULL;
+#endif
+}
 
 Client::Client(std::string_view broker, uint16_t port, std::string_view client_name, std::string_view user, std::string_view password)
     : _mqtt(mqtt_client_new()),
