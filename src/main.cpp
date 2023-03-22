@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
-Copyright 2023 Joe Porembski
+Copyright (c) 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
 #include "connectivity/mqtt.hpp"
