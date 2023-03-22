@@ -7,5 +7,5 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <string_view>
 
 
-inline constexpr std::string_view HUMIDITY_TOPIC_NAME = "climate/sensor/humidity";
-inline constexpr std::string_view TEMPERATURE_TOPIC_NAME = "climate/sensor/temperate";
+inline constexpr std::string_view HUMIDITY_TOPIC_NAME_FORMAT = "%s/climate/sensor/humidity";
+inline constexpr std::string_view TEMPERATURE_TOPIC_NAME_FORMAT = "%s/climate/sensor/temperate";
