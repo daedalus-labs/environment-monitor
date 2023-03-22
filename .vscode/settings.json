@@ -57,6 +57,7 @@
     "cSpell.words": [
         "ALTCP",
         "gpio",
+        "INPROGRESS",
         "inpub",
         "MQTT",
         "netif",

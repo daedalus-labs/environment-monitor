@@ -75,6 +75,8 @@ static void onRequestComplete(void* arg, err_t error)
 }
 
 namespace mqtt {
+inline constexpr uint32_t DNS_TIMEOUT_MS = 10000;
+
 Client::Client(std::string_view broker, uint16_t port, std::string_view client_name)
     : _mqtt(mqtt_client_new()), _broker(broker), _port(port), _broker_address(), _name(client_name), _user(), _password(), _info()
 {
@@ -130,7 +132,7 @@ bool Client::connected() const
 
 bool Client::connect()
 {
-    if (!dns::resolve(_broker.c_str())) {
+    if (!dns::resolve(_broker, _broker_address, DNS_TIMEOUT_MS)) {
         printf("Failed to resolve %s when connecting to MQTT\n", _broker.c_str());
         return false;
     }
