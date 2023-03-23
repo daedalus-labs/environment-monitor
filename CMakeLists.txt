@@ -82,6 +82,7 @@ target_sources(
         src/connectivity/wifi-connection.cpp
 
         src/sensors/battery.cpp
+        src/sensors/board.cpp
         src/sensors/dht.cpp
 
         src/main.cpp

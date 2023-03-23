@@ -35,14 +35,14 @@ int main(int argc, char** argv)
     sleep_ms(10000);
 
     while (true) {
+        printf("\n-----------------\n");
         sensor.read();
         wifi.poll();
-
-        printf("\n-----------------\n");
         printf("Temperature: %.1fC (%.1fF), Humidity: %.1f%%\n", sensor.celsius(), sensor.fahrenheit(), sensor.humidity());
         printf("Wifi Connection Status: %s (%s)\n", toString(wifi.status()).data(), wifi.ipAddress().c_str());
         printf("Battery Charge: %u%% (%s)\n", battery.chargeRemaining(), battery.charging() ? "Charging" : "Not Charging");
         printf("CPU Temperature: %.1fC\n", board.celsius());
+        printf("-----------------\n");
 
         sleep_ms(10000);
     }

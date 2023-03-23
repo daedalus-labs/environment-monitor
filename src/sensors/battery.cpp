@@ -25,7 +25,6 @@ uint8_t Battery::chargeRemaining() const
 {
     adc_select_input(_voltage_adc_pin);
     float voltage = adc_read() * VOLTAGE_DIVIDER_CONVERSION_FACTOR;
-    printf("Voltage read: %u\n", adc_read());
     uint8_t charge = ((voltage - EMPTY_BATTERY_VOLTAGE) / (FULL_BATTERY_VOLTAGE - EMPTY_BATTERY_VOLTAGE)) * PERCENT_FACTOR;
     if (charge > PERCENT_FACTOR) {
         return PERCENT_FACTOR;
