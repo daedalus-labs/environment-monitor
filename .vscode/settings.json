@@ -58,6 +58,7 @@
         "Pico",
         "Porembski",
         "RASPBERRYPI",
-        "SSID"
+        "SSID",
+        "VREF"
     ]
 }

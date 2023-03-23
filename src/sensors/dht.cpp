@@ -2,7 +2,6 @@
 Copyright 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
-
 #include "sensors/dht.hpp"
 
 #include "sensors/constants.hpp"
@@ -21,14 +20,13 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <cstdio>
 #include <thread>
 
+
 inline constexpr size_t HUMIDITY_MSB_INDEX = 0;
 inline constexpr size_t HUMIDITY_LSB_INDEX = 1;
 inline constexpr size_t TEMP_MSB_INDEX = 2;
 inline constexpr size_t TEMP_LSB_INDEX = 3;
 inline constexpr size_t PARITY_INDEX = 4;
 inline constexpr float DATA_FACTOR = 10.0;
-inline constexpr float C_TO_F_SCALE = 9.0 / 5.0;
-inline constexpr float C_TO_F_OFFSET = 32.0;
 inline constexpr uint64_t MAX_WAIT_TIME_US = 100;
 inline constexpr uint64_t LOGICAL_ZERO_THRESHOLD_US = 40;
 inline constexpr uint64_t READ_REQUEST_LOW_TIME_MS = 20;

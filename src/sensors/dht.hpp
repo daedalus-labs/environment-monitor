@@ -4,10 +4,10 @@ SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
 #pragma once
 
-
 #include <array>
 #include <cstddef>
 #include <cstdint>
+
 
 /**
  * Enumerates the types of DHT sensors supported.
