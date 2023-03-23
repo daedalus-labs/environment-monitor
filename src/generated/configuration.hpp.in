@@ -24,4 +24,10 @@ inline constexpr uint8_t DHT_FEEDBACK_PIN = @DHT_FEEDBACK_PIN@;
 /** GPIO Pin for DHT Sensor Sensor data */
 inline constexpr uint8_t DHT_DATA_PIN = @DHT_DATA_PIN@;
 
+/** ADC Pin to read the Battery Voltage */
+inline constexpr uint8_t BATTERY_VOLTAGE_PIN = @BATTERY_VOLTAGE_PIN@;
+
+/** GPIO Pin indicating Battery Power */
+inline constexpr uint8_t BATTERY_CHARGING_PIN = @BATTERY_CHARGING_PIN@;
+
 // clang-format on

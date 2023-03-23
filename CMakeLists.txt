@@ -34,11 +34,19 @@ if(NOT DEFINED SERVER_PORT)
 endif()
 
 if(NOT DEFINED DHT_FEEDBACK_PIN)
-    set(DHT_FEEDBACK_PIN 13)
+    set(DHT_FEEDBACK_PIN 14)
 endif()
 
 if(NOT DEFINED DHT_DATA_PIN)
     set(DHT_DATA_PIN 18)
+endif()
+
+if(NOT DEFINED BATTERY_VOLTAGE_PIN)
+    set(BATTERY_VOLTAGE_PIN 2)
+endif()
+
+if(NOT DEFINED BATTERY_CHARGING_PIN)
+    set(BATTERY_CHARGING_PIN 24)
 endif()
 
 configure_file(
@@ -72,7 +80,10 @@ target_sources(
     PRIVATE
         src/connectivity/connection-status.cpp
         src/connectivity/wifi-connection.cpp
+
+        src/sensors/board.cpp
         src/sensors/dht.cpp
+        src/sensors/lipo-shim.cpp
 
         src/main.cpp
         src/utilities.cpp
@@ -82,6 +93,7 @@ target_link_libraries(
     ${PROJECT_NAME}
     pico_cyw43_arch_lwip_poll
     pico_stdlib
+    hardware_adc
     hardware_i2c
 )
 pico_enable_stdio_usb(${PROJECT_NAME} 1)
