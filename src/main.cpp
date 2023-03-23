@@ -5,10 +5,10 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "connectivity/connection-status.hpp"
 #include "connectivity/wifi-connection.hpp"
 #include "generated/configuration.hpp"
-#include "sensors/battery.hpp"
 #include "sensors/board.hpp"
 #include "sensors/constants.hpp"
 #include "sensors/dht.hpp"
+#include "sensors/lipo-shim.hpp"
 #include "utilities.hpp"
 
 #include <hardware/adc.h>
@@ -29,7 +29,7 @@ int main(int argc, char** argv)
     printf("Wifi Connection Status: %s\n", toString(wifi.status()).data());
 
     DHT sensor(DHTType::DHT22, DHT_DATA_PIN, DHT_FEEDBACK_PIN);
-    sensors::Battery battery(BATTERY_VOLTAGE_PIN, BATTERY_CHARGING_PIN);
+    sensors::LiPoShim battery(BATTERY_VOLTAGE_PIN, BATTERY_CHARGING_PIN);
     sensors::Board board;
 
     sleep_ms(10000);

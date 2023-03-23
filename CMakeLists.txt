@@ -34,7 +34,7 @@ if(NOT DEFINED SERVER_PORT)
 endif()
 
 if(NOT DEFINED DHT_FEEDBACK_PIN)
-    set(DHT_FEEDBACK_PIN 13)
+    set(DHT_FEEDBACK_PIN 14)
 endif()
 
 if(NOT DEFINED DHT_DATA_PIN)
@@ -81,9 +81,9 @@ target_sources(
         src/connectivity/connection-status.cpp
         src/connectivity/wifi-connection.cpp
 
-        src/sensors/battery.cpp
         src/sensors/board.cpp
         src/sensors/dht.cpp
+        src/sensors/lipo-shim.cpp
 
         src/main.cpp
         src/utilities.cpp

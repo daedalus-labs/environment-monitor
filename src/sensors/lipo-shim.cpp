@@ -2,7 +2,7 @@
 Copyright 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
-#include "sensors/battery.hpp"
+#include "sensors/lipo-shim.hpp"
 
 #include "sensors/constants.hpp"
 
@@ -14,14 +14,14 @@ SPDX-License-Identifier: BSD-3-Clause
 
 
 namespace sensors {
-Battery::Battery(uint8_t voltage_adc_pin, uint8_t charging_pin) : _voltage_adc_pin(voltage_adc_pin), _charging_pin(charging_pin)
+LiPoShim::LiPoShim(uint8_t voltage_adc_pin, uint8_t charging_pin) : _voltage_adc_pin(voltage_adc_pin), _charging_pin(charging_pin)
 {
     adc_gpio_init(_voltage_adc_pin + GPIO_PIN_OFFSET);
     gpio_init(_charging_pin);
     gpio_set_dir(_charging_pin, GPIO_IN);
 }
 
-uint8_t Battery::chargeRemaining() const
+uint8_t LiPoShim::chargeRemaining() const
 {
     adc_select_input(_voltage_adc_pin);
     float voltage = adc_read() * VOLTAGE_DIVIDER_CONVERSION_FACTOR;
@@ -32,7 +32,7 @@ uint8_t Battery::chargeRemaining() const
     return charge;
 }
 
-bool Battery::charging() const
+bool LiPoShim::charging() const
 {
     return gpio_get(_charging_pin);
 }

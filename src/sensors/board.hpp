@@ -9,9 +9,13 @@ SPDX-License-Identifier: BSD-3-Clause
 
 
 namespace sensors {
+/**
+ * Internal sensors provided by the Pico Hardware.
+ */
 class Board
 {
 public:
+    /** Constructor. */
     Board();
 
     /**
