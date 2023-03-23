@@ -79,9 +79,6 @@ target_sources(
         src/connectivity/wireless/connection-status.cpp
         src/connectivity/wireless/wifi-connection.cpp
 
-        src/connectivity/connection-status.cpp
-        src/connectivity/wifi-connection.cpp
-
         src/sensors/board.cpp
         src/sensors/dht.cpp
         src/sensors/lipo-shim.cpp
