@@ -83,12 +83,12 @@ bool DHT::_checkResponse() const
 
     gpio_set_dir(_data_pin, GPIO_IN);
 
-    if (!_wait(LOW, MAX_WAIT_TIME_US)) {
+    if (!wait(_data_pin, static_cast<bool>(LOW), MAX_WAIT_TIME_US)) {
         printf("Humidity sensor on %d did not pull down correctly in the preamble\n", _data_pin);
         return false;
     }
 
-    if (!_wait(HIGH, MAX_WAIT_TIME_US)) {
+    if (!wait(_data_pin, static_cast<bool>(HIGH), MAX_WAIT_TIME_US)) {
         printf("Humidity sensor on %d did not pull up correctly in the preamble\n", _data_pin);
         return false;
     }
@@ -107,8 +107,8 @@ bool DHT::_getDataBit() const
      *  - 1: Data line is high for 70 us after the low period.
      */
 
-    _wait(LOW, MAX_WAIT_TIME_US);
-    _wait(HIGH, MAX_WAIT_TIME_US);
+    wait(_data_pin, static_cast<bool>(LOW), MAX_WAIT_TIME_US);
+    wait(_data_pin, static_cast<bool>(HIGH), MAX_WAIT_TIME_US);
 
     // Wait 40 us, if the pin is still high, the bit is a `1`, otherwise it is a `0`.
     sleep_us(LOGICAL_ZERO_THRESHOLD_US);
@@ -206,16 +206,4 @@ void DHT::_start()
     sleep_ms(READ_REQUEST_LOW_TIME_MS);
     gpio_put(_data_pin, HIGH);
     sleep_us(READ_REQUEST_HIGH_TIME_US);
-}
-
-bool DHT::_wait(uint32_t desired_state, uint64_t wait_length) const
-{
-    bool desired_read_value = desired_state == HIGH;
-    uint64_t read_count = 0;
-    while (gpio_get(_data_pin) != desired_read_value && read_count < wait_length) {
-        read_count++;
-        sleep_us(1);
-    }
-
-    return read_count < wait_length;
 }

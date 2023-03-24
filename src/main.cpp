@@ -32,19 +32,22 @@ int main(int argc, char** argv)
     sensors::LiPoShim battery(BATTERY_VOLTAGE_PIN, BATTERY_CHARGING_PIN);
     sensors::Board board;
 
+    uint32_t count = 0;
     sleep_ms(10000);
 
     while (true) {
-        printf("\n-----------------\n");
+        printf("\n----------------- [%u]\n", count);
         sensor.read();
         wifi.poll();
         printf("Temperature: %.1fC (%.1fF), Humidity: %.1f%%\n", sensor.celsius(), sensor.fahrenheit(), sensor.humidity());
         printf("Wifi Connection Status: %s (%s)\n", toString(wifi.status()).data(), wifi.ipAddress().c_str());
-        printf("Battery Charge: %u%% (%s)\n", battery.chargeRemaining(), battery.charging() ? "Charging" : "Not Charging");
+        printf("Battery Charge: %.3fV (%u%%)\n", battery.voltage(), battery.chargeRemaining());
+        printf("Battery is %s\n", battery.charging() ? "charging" : "not charging");
         printf("CPU Temperature: %.1fC\n", board.celsius());
         printf("-----------------\n");
 
         sleep_ms(10000);
+        count++;
     }
 
     return 0;
