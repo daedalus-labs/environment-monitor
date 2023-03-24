@@ -23,9 +23,7 @@ LiPoShim::LiPoShim(uint8_t voltage_adc_pin, uint8_t charging_pin) : _voltage_adc
 
 uint8_t LiPoShim::chargeRemaining() const
 {
-    adc_select_input(_voltage_adc_pin);
-    float voltage = adc_read() * VOLTAGE_DIVIDER_CONVERSION_FACTOR;
-    uint8_t charge = ((voltage - EMPTY_BATTERY_VOLTAGE) / (FULL_BATTERY_VOLTAGE - EMPTY_BATTERY_VOLTAGE)) * PERCENT_FACTOR;
+    uint8_t charge = ((voltage() - EMPTY_BATTERY_VOLTAGE) / (FULL_BATTERY_VOLTAGE - EMPTY_BATTERY_VOLTAGE)) * PERCENT_FACTOR;
     if (charge > PERCENT_FACTOR) {
         return PERCENT_FACTOR;
     }
@@ -35,5 +33,11 @@ uint8_t LiPoShim::chargeRemaining() const
 bool LiPoShim::charging() const
 {
     return gpio_get(_charging_pin);
+}
+
+float LiPoShim::voltage() const
+{
+    adc_select_input(_voltage_adc_pin);
+    return adc_read() * VOLTAGE_DIVIDER_CONVERSION_FACTOR;
 }
 } // namespace sensors
