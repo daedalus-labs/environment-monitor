@@ -8,6 +8,7 @@ SPDX-License-Identifier: BSD-3-Clause
 #include "connectivity/detail/communication.hpp"
 #include "connectivity/detail/wifi-state.hpp"
 
+#include <cyw43.h>
 #include <lwip/ip.h>
 #include <lwip/netif.h>
 #include <lwip/pbuf.h>
@@ -87,6 +88,7 @@ const MACAddress& WifiConnection::macAddress() const
 
 ConnectionStatus WifiConnection::status() const
 {
+    printf("%d\n", cyw43_wifi_link_status(&cyw43_state, CYW43_ITF_STA));
     if (_state) {
         return _state->status;
     }
@@ -122,38 +124,3 @@ void WifiConnection::_connectToWireless(std::string_view ssid, std::string_view 
 
     printf("Connected to %s\n", ssid.data());
 }
-
-// void WifiConnection::_connectToServer(std::string_view ip_address, uint16_t port)
-// {
-//     _state->status = ConnectionStatus::CONNECTING_TO_SERVER;
-//     printf("Establishing connection to server %s:%d... \n", ip_address.data(), port);
-//     ip4addr_aton(ip_address.data(), &_state->remote_address);
-//     _state->control = tcp_new_ip_type(IP_GET_TYPE(&_state->remote_addr));
-//     _state->remote_port = port;
-
-//     if (!_state->control) {
-//         printf("Failed to create TCP control object\n");
-//         _state->status = ConnectionStatus::SERVER_CONNECTION_FAILURE;
-//         return;
-//     }
-
-//     tcp_arg(_state->control, _state);
-//     tcp_poll(_state->control, clientPoll, POLL_TIME_S * 2);
-//     tcp_sent(_state->control, clientSent);
-//     tcp_recv(_state->control, clientReceive);
-//     tcp_err(_state->control, clientError);
-//     _state->buffer_length = 0;
-
-//     // cyw43_arch_lwip_begin/end should be used around calls into lwIP to ensure correct locking.
-//     // You can omit them if you are in a callback from lwIP. Note that when using pico_cyw_arch_poll
-//     // these calls are a no-op and can be omitted, but it is a good practice to use them in
-//     // case you switch the cyw43_arch type later.
-//     cyw43_arch_lwip_begin();
-//     err_t error = tcp_connect(_state->control, &_state->remote_address, _state->remote_port, clientConnected);
-//     cyw43_arch_lwip_end();
-
-//     if (error != ERR_OK) {
-//         printf("Failed to create TCP connection to server\n");
-//         _state->status = ConnectionStatus::SERVER_CONNECTION_FAILURE;
-//     }
-// }

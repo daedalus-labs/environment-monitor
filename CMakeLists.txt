@@ -91,7 +91,12 @@ target_sources(
 
 target_link_libraries(
     ${PROJECT_NAME}
-    pico_cyw43_arch_lwip_poll
+    pico_cyw43_arch
+    # pico_cyw43_arch_lwip_poll
+    pico_cyw43_driver
+    cyw43_driver
+    cyw43_driver_picow
+    pico_cyw43_arch_lwip_threadsafe_background
     pico_stdlib
     hardware_adc
     hardware_i2c
