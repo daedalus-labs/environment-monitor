@@ -21,11 +21,6 @@ public:
     /**
      * @return The board temperature in degrees Celsius.
      */
-    float celsius() const;
-
-    /**
-     * @return The board temperature in degrees Fahrenheit.
-     */
-    float fahrenheit() const;
+    float temperature() const;
 };
 } // namespace sensors

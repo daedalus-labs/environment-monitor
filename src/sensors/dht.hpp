@@ -48,12 +48,7 @@ public:
     /**
      * @return The measured temperature in degrees Celsius.
      */
-    float celsius() const;
-
-    /**
-     * @return The measured temperature in degrees Fahrenheit.
-     */
-    float fahrenheit() const;
+    float temperature() const;
 
     /**
      * @return The measured humidity as a percentage.
@@ -112,17 +107,6 @@ private:
      * Starts the process of reading a data frame from the sensor.
      */
     void _start();
-
-    /**
-     * Waits on the sensor's data pin to become @a desired_state.
-     *
-     * Will timeout after @a wait_length, and return false.
-     *
-     * @param[in] desired_state The desired state of the sensor's data pin.
-     * @param[in] wait_length The time to wait for it to enter this state in microseconds (us).
-     * @return True if the wait was successful, false otherwise.
-     */
-    bool _wait(uint32_t desired_state, uint64_t wait_length) const;
 
     float _humidity;
     float _temperature;

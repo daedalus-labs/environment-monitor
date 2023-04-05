@@ -35,6 +35,11 @@ public:
      */
     bool charging() const;
 
+    /**
+     * @return The current supply voltage in volts.
+     */
+    float voltage() const;
+
 private:
     uint8_t _voltage_adc_pin;
     uint8_t _charging_pin;
