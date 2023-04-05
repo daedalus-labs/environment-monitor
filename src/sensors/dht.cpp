@@ -47,14 +47,9 @@ DHT::DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin)
     gpio_init(_data_pin);
 }
 
-float DHT::celsius() const
+float DHT::temperature() const
 {
     return _temperature;
-}
-
-float DHT::fahrenheit() const
-{
-    return (C_TO_F_SCALE * _temperature) + C_TO_F_OFFSET;
 }
 
 float DHT::humidity() const

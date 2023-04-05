@@ -23,5 +23,3 @@ inline constexpr float ADC_CONVERSION_FACTOR = ADC_VREF / (1 << ADC_RESOLUTION);
 inline constexpr float VOLTAGE_DIVIDER_CONVERSION_FACTOR = 2.0f * ADC_CONVERSION_FACTOR;
 inline constexpr uint8_t PERCENT_FACTOR = 100;
 inline constexpr uint8_t GPIO_PIN_OFFSET = 26;
-inline constexpr float C_TO_F_SCALE = 9.0 / 5.0;
-inline constexpr float C_TO_F_OFFSET = 32.0;

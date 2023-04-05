@@ -33,17 +33,25 @@ int main(int argc, char** argv)
     sensors::Board board;
 
     uint32_t count = 0;
+    float board_temp = 0.0f;
+    float sensor_temp = 0.0f;
+
     sleep_ms(10000);
 
     while (true) {
         printf("\n----------------- [%u]\n", count);
+
+        board_temp = board.temperature();
+        sensor_temp = sensor.temperature();
         sensor.read();
         wifi.poll();
-        printf("Temperature: %.1fC (%.1fF), Humidity: %.1f%%\n", sensor.celsius(), sensor.fahrenheit(), sensor.humidity());
+
+        printf("Temperature: %.1fC (%.1fF), Humidity: %.1f%%\n", sensor_temp, toFahrenheit(sensor_temp), sensor.humidity());
         printf("Wifi Connection Status: %s (%s)\n", toString(wifi.status()).data(), wifi.ipAddress().c_str());
         printf("Battery Charge: %.3fV (%u%%)\n", battery.voltage(), battery.chargeRemaining());
         printf("Battery is %s\n", battery.charging() ? "charging" : "not charging");
-        printf("CPU Temperature: %.1fC\n", board.celsius());
+        printf("CPU Temperature: %.1fC (%.1fF)\n", board_temp, toFahrenheit(board_temp));
+
         printf("-----------------\n");
 
         sleep_ms(10000);

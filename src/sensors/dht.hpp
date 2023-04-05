@@ -48,12 +48,7 @@ public:
     /**
      * @return The measured temperature in degrees Celsius.
      */
-    float celsius() const;
-
-    /**
-     * @return The measured temperature in degrees Fahrenheit.
-     */
-    float fahrenheit() const;
+    float temperature() const;
 
     /**
      * @return The measured humidity as a percentage.

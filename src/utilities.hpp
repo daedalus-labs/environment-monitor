@@ -11,6 +11,9 @@ SPDX-License-Identifier: BSD-3-Clause
 #include <cstdint>
 
 
+inline constexpr float C_TO_F_SCALE = 9.0 / 5.0;
+inline constexpr float C_TO_F_OFFSET = 32.0;
+
 /**
  * @return The microseconds since boot.
  */
@@ -28,3 +31,14 @@ uint64_t microseconds();
  * @return True if the wait was successful, false otherwise.
  */
 bool wait(uint8_t gpio_pin, bool desired_state, uint64_t wait_length);
+
+/**
+ * Converts a temperature in celsius to its equivalent in fahrenheit.
+ *
+ * @param[in] temperature The temperature in celsius.
+ * @return The value of @a temperature converted to fahrenheit.
+ */
+inline float toFahrenheit(float temperature)
+{
+    return (C_TO_F_SCALE * temperature) + C_TO_F_OFFSET;
+}
