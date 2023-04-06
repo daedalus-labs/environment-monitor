@@ -92,6 +92,8 @@ bool resolve(const std::string& hostname, ip_addr_t& resolved_address, int32_t t
         return false;
     }
 
+    // resolved_address above is only set if the result has been cached.
+    resolved_address = request.resolved_address;
     return true;
 }
 } // namespace dns

@@ -25,7 +25,9 @@ SPDX-License-Identifier: BSD-3-Clause
  * @param[in] status The connection status.
  */
 static void onConnectionComplete(mqtt_client_t* client, void* arg, mqtt_connection_status_t status)
-{}
+{
+    printf("Connection Status: %d\n", static_cast<int32_t>(status));
+}
 
 /**
  * Callback for handling incoming message data.
@@ -127,7 +129,7 @@ Client::~Client()
 
 bool Client::connected() const
 {
-    return mqtt_client_is_connected(_mqtt) == CONNECTED;
+    return mqtt_client_is_connected(_mqtt) >= CONNECTED;
 }
 
 bool Client::connect()
@@ -137,6 +139,7 @@ bool Client::connect()
         return false;
     }
 
+    printf("Connecting to %s (%s) as %s\n", _broker.c_str(), ip4addr_ntoa(&_broker_address), _info.client_id);
     mqtt_set_inpub_callback(_mqtt, onTopicUpdated, onDataReceived, LWIP_CONST_CAST(void*, &_info));
 
     cyw43_arch_lwip_begin();
@@ -158,7 +161,7 @@ bool Client::disconnect()
     return true;
 }
 
-bool Client::publish(std::string_view topic, void* payload, uint16_t size, QoS qos, bool retain)
+bool Client::publish(std::string_view topic, const void* payload, uint16_t size, QoS qos, bool retain)
 {
     uint8_t qos_value = static_cast<uint8_t>(qos);
     uint8_t retain_value = static_cast<uint8_t>(retain);

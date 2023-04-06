@@ -30,7 +30,7 @@ public:
     bool connect();
     bool connected() const;
     bool disconnect();
-    bool publish(std::string_view topic, void* payload, uint16_t size, QoS qos, bool retain);
+    bool publish(std::string_view topic, const void* payload, uint16_t size, QoS qos, bool retain);
 
 private:
     mqtt_client_t* _mqtt;

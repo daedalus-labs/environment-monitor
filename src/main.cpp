@@ -38,6 +38,13 @@ int main(int argc, char** argv)
     sleep_ms(10000);
 
     while (true) {
+        if (!mqtt.connected()) {
+            printf("MQTT not connected\n");
+            mqtt.connect();
+            sleep_ms(17500);
+            continue;
+        }
+
         printf("\n----------------- [%u]\n", count);
 
         board_temp = board.temperature();
@@ -50,6 +57,15 @@ int main(int argc, char** argv)
         printf("Battery Charge: %.3fV (%u%%)\n", battery.voltage(), battery.chargeRemaining());
         printf("Battery is %s\n", battery.charging() ? "charging" : "not charging");
         printf("CPU Temperature: %.1fC (%.1fF)\n", board_temp, toFahrenheit(board_temp));
+        printf("MQTT Status: %s\n", mqtt.connected() ? "true" : "false");
+
+        if (!mqtt.publish(VERSION_TOPIC, static_cast<const void*>(VERSION.data()), VERSION.size(), mqtt::QoS::EXACTLY_ONCE, true)) {
+            printf("Failed to publish %s\n", VERSION_TOPIC.data());
+        }
+
+        if (!mqtt.publish(TEMPERATURE_TOPIC, static_cast<const void*>(&sensor_temp), sizeof(sensor_temp), mqtt::QoS::EXACTLY_ONCE, true)) {
+            printf("Failed to publish %s\n", TEMPERATURE_TOPIC.data());
+        }
 
         printf("-----------------\n");
 
