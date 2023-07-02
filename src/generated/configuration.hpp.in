@@ -1,6 +1,7 @@
 // clang-format off
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 
 /** Wireless SSID (Pico W) */

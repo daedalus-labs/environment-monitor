@@ -1,5 +1,5 @@
 /*------------------------------------------------------------------------------
-Copyright 2023 Joe Porembski
+Copyright (c) 2023 Joe Porembski
 SPDX-License-Identifier: BSD-3-Clause
 ------------------------------------------------------------------------------*/
 #pragma once
@@ -41,7 +41,8 @@ public:
      *
      * @param[in] type The type of sensor.
      * @param[in] data_pin The data pin of the DHT sensor.
-     * @param[in] feedback_led_pin The pin of the LED to toggle on/off. If provided, the LED will be on when data is being read from the sensor, and off otherwise.
+     * @param[in] feedback_led_pin The pin of the LED to toggle on/off. If provided, the LED will be on when data is being read from the
+     * sensor, and off otherwise.
      */
     DHT(DHTType type, uint8_t data_pin, uint8_t feedback_led_pin);
 
